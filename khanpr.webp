@@ -1,0 +1,2071 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Yuri Music</title>
+
+  <meta name="description" content="Yuri Music adalah bot musik Discord modern dengan audio berkualitas tinggi, kontrol interaktif, playlist canggih, filter audio, dan lirik real-time untuk server Discord kamu.">
+  <meta name="keywords" content="Yuri Music, Discord Music Bot, Bot Musik Discord, Spotify Bot, YouTube Music Bot, Discord Bot Indonesia">
+  <meta name="author" content="Yuri Music">
+  <meta name="robots" content="index, follow">
+  <meta name="theme-color" content="#7c3aed">
+  <link rel="canonical" href="https://yurimusic.xyz/">
+
+  <!-- Open Graph / Embed Preview -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Yuri Music">
+  <meta property="og:description" content="Bot musik Discord modern dengan kualitas audio jernih, kontrol interaktif, playlist canggih, filter audio, dan lirik real-time.">
+  <meta property="og:url" content="https://yurimusic.xyz/">
+  <meta property="og:site_name" content="Yuri Music">
+  <meta property="og:locale" content="id_ID">
+  <meta property="og:image" content="https://yurimusic.xyz/pp.jpg">
+  <meta property="og:image:secure_url" content="https://yurimusic.xyz/pp.jpg">
+  <meta property="og:image:alt" content="Yuri Music - Discord Music Bot">
+  <meta property="og:image:type" content="image/jpeg">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Yuri Music">
+  <meta name="twitter:description" content="Bot musik Discord modern dengan kualitas audio jernih, kontrol interaktif, playlist canggih, filter audio, dan lirik real-time.">
+  <meta name="twitter:image" content="https://yurimusic.xyz/pp.jpg">
+
+  <!-- Optional favicon -->
+  <link rel="icon" type="image/jpeg" href="https://yurimusic.xyz/pp.jpg">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Roboto:wght@300;400;700&display=swap"
+    rel="stylesheet">
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      min-height: 100vh;
+      background: #000000;
+      font-family: 'Roboto', system-ui, sans-serif;
+      overflow-x: hidden;
+      overflow-y: auto;
+      position: relative;
+      color: #fff;
+      opacity: 0;
+      transition: opacity 1.2s ease;
+    }
+
+    body.loaded {
+      opacity: 1;
+    }
+
+    /* === PRELOADER === */
+    #preloader {
+      position: fixed;
+      inset: 0;
+      background: #000;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      transition: opacity 0.6s ease, visibility 0.6s ease;
+    }
+
+    #preloader.hidden {
+      opacity: 0;
+      visibility: hidden;
+    }
+
+    .loader-logo {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 6rem;
+      font-weight: 900;
+      background: linear-gradient(90deg, #00f0ff, #00aaff, #0066ff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-shadow: 0 0 30px rgba(0, 240, 255, 0.7);
+      animation: pulse 2s infinite alternate;
+      margin-bottom: 20px;
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(1); opacity: 0.8; }
+      100% { transform: scale(1.08); opacity: 1; }
+    }
+
+    .loader-text {
+      font-size: 1.8rem;
+      color: #a78bfa;
+      letter-spacing: 4px;
+      margin-bottom: 30px;
+    }
+
+    .loader-bar {
+      width: 300px;
+      height: 6px;
+      background: rgba(168, 139, 250, 0.2);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+
+    .loader-progress {
+      width: 0;
+      height: 100%;
+      background: linear-gradient(90deg, #a78bfa, #c084fc);
+      animation: loading 1.8s ease-in-out forwards;
+    }
+
+    @keyframes loading {
+      0% { width: 0; }
+      100% { width: 100%; }
+    }
+
+    /* Navbar */
+    .navbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 70px;
+      background: rgba(5, 5, 15, 0.88);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(120, 100, 255, 0.12);
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 50px;
+      opacity: 0;
+      transform: translateY(-20px);
+      transition: all 0.6s ease 1.8s;
+    }
+
+    .navbar.loaded {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .logo {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 1.9rem;
+      font-weight: 900;
+      background: linear-gradient(90deg, #c084fc, #7c3aed, #a78bfa);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-shadow: 0 0 15px rgba(168, 85, 247, 0.6);
+      letter-spacing: 3px;
+    }
+
+    .nav-menu {
+      display: flex;
+      gap: 50px;
+      align-items: center;
+    }
+
+    .nav-menu a {
+      color: #d0d0ff;
+      text-decoration: none;
+      font-size: 1.1rem;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      position: relative;
+    }
+
+    .nav-menu a:hover {
+      color: #ffffff;
+      text-shadow: 0 0 10px rgba(255, 255, 255, 0.7);
+    }
+
+    .nav-menu a::after {
+      content: '';
+      position: absolute;
+      width: 0;
+      height: 2px;
+      bottom: -8px;
+      left: 0;
+      background: linear-gradient(90deg, #c084fc, #a78bfa);
+      transition: width 0.4s ease;
+    }
+
+    .nav-menu a:hover::after {
+      width: 100%;
+    }
+
+    .nav-actions {
+      display: flex;
+      gap: 20px;
+      align-items: center;
+    }
+
+    .btn-action {
+      padding: 10px 28px;
+      border-radius: 50px;
+      font-size: 1rem;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.3s ease;
+    }
+
+    .btn-premium {
+      background: linear-gradient(135deg, #7c3aed, #c084fc);
+      color: white;
+      box-shadow: 0 0 20px rgba(168, 85, 247, 0.5);
+    }
+
+    .btn-premium:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 0 35px rgba(168, 85, 247, 0.8);
+    }
+
+    .btn-support {
+      background: transparent;
+      color: #d0d0ff;
+      border: 1px solid rgba(168, 85, 247, 0.5);
+    }
+
+    .btn-support:hover {
+      background: rgba(168, 85, 247, 0.12);
+      color: white;
+      border-color: #c084fc;
+    }
+
+    .btn-login {
+      padding: 10px 28px;
+      background: #5865F2;
+      color: white;
+      border-radius: 50px;
+      font-size: 1rem;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.3s ease;
+      box-shadow: 0 0 20px rgba(88, 101, 242, 0.5);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-login:hover {
+      background: #4752C4;
+      transform: translateY(-3px);
+      box-shadow: 0 0 35px rgba(88, 101, 242, 0.8);
+    }
+
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      color: #d0d0ff;
+      font-weight: 600;
+    }
+
+    .user-avatar {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #c084fc, #7c3aed);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      border: 2px solid rgba(168, 85, 247, 0.5);
+    }
+
+    .btn-logout {
+      padding: 8px 22px;
+      background: transparent;
+      color: #ff6b6b;
+      border: 1px solid #ff6b6b;
+      border-radius: 50px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 0.95rem;
+    }
+
+    .btn-logout:hover {
+      background: rgba(255, 107, 107, 0.15);
+      transform: translateY(-2px);
+    }
+
+    /* Dropdown */
+    .nav-dropdown {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .nav-dropbtn {
+      background: transparent;
+      border: none;
+      color: #d0d0ff;
+      font-size: 1.1rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      position: relative;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .nav-dropbtn:hover {
+      color: #ffffff;
+      text-shadow: 0 0 10px rgba(255, 255, 255, 0.7);
+    }
+
+    .nav-dropbtn::after {
+      content: '';
+      position: absolute;
+      width: 0;
+      height: 2px;
+      bottom: -8px;
+      left: 0;
+      background: linear-gradient(90deg, #c084fc, #a78bfa);
+      transition: width 0.4s ease;
+    }
+
+    .nav-dropdown:hover .nav-dropbtn::after {
+      width: 100%;
+    }
+
+    .dropdown-panel {
+      position: absolute;
+      top: calc(100% + 18px);
+      left: 0;
+      width: 340px;
+      padding: 14px;
+      border-radius: 14px;
+      background: rgba(10, 10, 18, 0.92);
+      border: 1px solid rgba(168, 85, 247, 0.20);
+      box-shadow: 0 25px 80px rgba(0, 0, 0, 0.70);
+      backdrop-filter: blur(14px);
+      transform: translateY(-10px);
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.25s ease;
+      z-index: 2000;
+    }
+
+    .nav-dropdown.open .dropdown-panel {
+      transform: translateY(0);
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .dropdown-item {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 12px 12px;
+      border-radius: 12px;
+      text-decoration: none;
+      transition: all 0.25s ease;
+    }
+
+    .dropdown-item:hover {
+      background: rgba(168, 85, 247, 0.10);
+      border: 1px solid rgba(168, 85, 247, 0.18);
+    }
+
+    .dropdown-ico {
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      background: rgba(168, 85, 247, 0.12);
+      border: 1px solid rgba(168, 85, 247, 0.22);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+      color: #fff;
+      flex: 0 0 auto;
+    }
+
+    .dropdown-text {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .dropdown-title {
+      font-weight: 700;
+      color: #eaeaff;
+      font-size: 1.05rem;
+    }
+
+    .dropdown-sub {
+      color: #9aa0c6;
+      font-size: 0.92rem;
+    }
+
+    /* Stars & Meteor */
+    .stars {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: -1;
+    }
+
+    .star {
+      position: absolute;
+      background: #ffffff;
+      border-radius: 50%;
+      box-shadow: 0 0 8px rgba(255, 255, 255, 0.8), 0 0 16px rgba(255, 255, 255, 0.4);
+      animation: twinkle 6s infinite alternate;
+      opacity: 0.9;
+    }
+
+    @keyframes twinkle {
+      0%, 100% { opacity: 0.5; transform: scale(0.8); }
+      50% { opacity: 1; transform: scale(1.2); }
+    }
+
+    .meteor {
+      position: absolute;
+      width: 5px;
+      height: 5px;
+      background: #ffffff;
+      border-radius: 50%;
+      box-shadow: 0 0 20px 8px rgba(255,255,255,0.95), 0 0 50px 15px rgba(255,255,255,0.7), 0 0 90px 30px rgba(255,255,255,0.4);
+      transform: translate(-50%, -50%) rotate(45deg);
+      pointer-events: none;
+      animation: meteor linear forwards;
+    }
+
+    .meteor::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: -220px;
+      width: 220px;
+      height: 3.5px;
+      background: linear-gradient(to left, transparent, rgba(255,255,255,0.9), rgba(255,255,255,0.6));
+      transform: translateY(-50%);
+      opacity: 0.9;
+      filter: blur(1.8px);
+    }
+
+    .meteor::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: -300px;
+      width: 300px;
+      height: 2.5px;
+      background: linear-gradient(to left, transparent, rgba(255,255,255,0.5));
+      transform: translateY(-50%);
+      opacity: 0.6;
+      filter: blur(4px);
+    }
+
+    @keyframes meteor {
+      0% { transform: translate(-50%, -50%) translate(0, 0) rotate(45deg); opacity: 1; }
+      100% { transform: translate(-50%, -50%) translate(-1200px, 1200px) rotate(45deg); opacity: 0; }
+    }
+
+    /* Header text */
+    .header-text {
+      position: relative;
+      top: 140px;
+      left: 8%;
+      z-index: 5;
+      max-width: 700px;
+      padding: 0 20px;
+      text-align: center;
+    }
+
+    .title {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 5.5rem;
+      font-weight: 900;
+      letter-spacing: 8px;
+      background: linear-gradient(90deg, #ffffff, #e0e0ff, #ffffff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-size: 200% auto;
+      animation: gradientFlow 8s linear infinite;
+      text-shadow: 0 0 20px rgba(255, 255, 255, 0.6), 0 0 40px rgba(255, 255, 255, 0.3);
+      white-space: nowrap;
+    }
+
+    @keyframes gradientFlow {
+      0% { background-position: 0% center; }
+      100% { background-position: 200% center; }
+    }
+
+    .subtitle {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 2.8rem;
+      font-weight: 900;
+      color: #d0d0ff;
+      margin-top: 20px;
+      letter-spacing: 4px;
+      text-shadow: 0 0 25px rgba(168, 139, 250, 0.8), 0 0 50px rgba(168, 139, 250, 0.4);
+      text-align: center;
+      background: linear-gradient(90deg, #a78bfa, #c084fc, #7c3aed);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      overflow: hidden;
+      white-space: nowrap;
+      border-right: 0.15em solid #a78bfa;
+      display: inline-block;
+      animation: typing-delete 8s steps(40) infinite, blink-caret 0.75s step-end infinite;
+    }
+
+    @keyframes typing-delete {
+      0% { width: 0; }
+      25% { width: 100%; }
+      50% { width: 100%; }
+      75% { width: 0; }
+      100% { width: 0; }
+    }
+
+    @keyframes blink-caret {
+      from, to { border-color: transparent; }
+      50% { border-color: #a78bfa; }
+    }
+
+    .description {
+      margin-top: 30px;
+      font-size: 1.3rem;
+      line-height: 1.7;
+      color: #cccccc;
+      max-width: 650px;
+      text-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+      text-align: center;
+    }
+
+    .description strong {
+      color: #ffffff;
+      text-shadow: 0 0 12px rgba(255, 255, 255, 0.6);
+    }
+
+    .buttons {
+      margin-top: 50px;
+      display: flex;
+      gap: 30px;
+      justify-content: center;
+    }
+
+    .btn {
+      padding: 16px 40px;
+      font-size: 1.4rem;
+      font-weight: 700;
+      text-decoration: none;
+      border-radius: 50px;
+      transition: all 0.4s ease;
+      cursor: pointer;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #7c3aed, #a78bfa);
+      color: white;
+      box-shadow: 0 0 25px rgba(168, 85, 247, 0.5);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 0 40px rgba(168, 85, 247, 0.8);
+      border-color: #d8b4fe;
+    }
+
+    .btn-secondary {
+      background: transparent;
+      color: #e0e0ff;
+      box-shadow: 0 0 25px rgba(255, 255, 255, 0.2);
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.08);
+      box-shadow: 0 0 35px rgba(255, 255, 255, 0.4);
+      border-color: rgba(255, 255, 255, 0.6);
+    }
+
+    /* Profile */
+    .profile-container {
+      position: absolute;
+      top: 280px;
+      right: 150px;
+      z-index: 10;
+    }
+
+    .profile {
+      width: 700px;
+      height: 700px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 6px solid rgba(255, 255, 255, 0.25);
+      box-shadow: 0 0 50px rgba(255,255,255,0.5), 0 0 100px rgba(255,255,255,0.25), inset 0 0 40px rgba(0,0,0,0.8);
+      transition: all 0.5s ease;
+    }
+
+    .profile:hover {
+      transform: scale(1.04);
+      box-shadow: 0 0 80px rgba(255,255,255,0.8), 0 0 140px rgba(255,255,255,0.4), inset 0 0 40px rgba(0,0,0,0.8);
+    }
+
+    /* Stats Bar */
+    .stats-bar {
+      position: relative;
+      top: 500px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 90%;
+      max-width: 1900px;
+      background: rgba(15, 10, 45, 0.75);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(168, 85, 247, 0.35);
+      border-radius: 16px;
+      padding: 50px 80px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
+      z-index: 9;
+      margin-bottom: 400px;
+    }
+
+    .stat-item {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      font-size: 1.15rem;
+      color: #d0d0ff;
+    }
+
+    .stat-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #7c3aed, #c084fc);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      box-shadow: 0 0 18px rgba(168, 85, 247, 0.5);
+    }
+
+    .stat-divider {
+      width: 1px;
+      height: 50px;
+      background: rgba(168, 85, 247, 0.3);
+    }
+
+    .stat-number {
+      font-weight: 700;
+      color: #ffffff;
+      font-size: 1.5rem;
+    }
+
+    /* ======= MUSIC INFO SECTION ======= */
+    .music-info-section {
+      padding: 520px 4vw 80px;
+      max-width: 100%;
+      width: 100%;
+      margin: 0 auto;
+      position: relative;
+      z-index: 2;
+    }
+
+    .section-label {
+      display: inline-block;
+      background: rgba(168, 85, 247, 0.15);
+      border: 1px solid rgba(168, 85, 247, 0.4);
+      border-radius: 50px;
+      padding: 8px 24px;
+      font-size: 1rem;
+      font-weight: 700;
+      color: #c084fc;
+      letter-spacing: 2px;
+      margin-bottom: 20px;
+    }
+
+    .section-heading {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 3.4rem;
+      font-weight: 900;
+      background: linear-gradient(90deg, #ffffff, #d0d0ff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 16px;
+      line-height: 1.2;
+    }
+
+    .section-desc {
+      font-size: 1.2rem;
+      color: #a0a0c0;
+      line-height: 1.7;
+      max-width: 520px;
+    }
+
+    .music-row {
+      display: flex;
+      align-items: center;
+      gap: 60px;
+      opacity: 0;
+      transform: translateY(60px);
+      transition: all 0.9s cubic-bezier(0.22, 1, 0.36, 1);
+      max-width: 30000px;
+      margin-left: auto;
+      margin-right: auto;
+      margin-bottom: 250px;
+    }
+
+    .music-row.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .music-row.reverse {
+      flex-direction: row-reverse;
+    }
+
+    .music-row-text {
+      flex: 1;
+      min-width: 280px;
+      padding: 0 20px;
+    }
+
+    .music-row-visual {
+      flex: 0.7;
+      min-width: 340px;
+      position: relative;
+    }
+
+    .discord-embed {
+      background: #2b2d31;
+      border-radius: 12px;
+      border-left: 4px solid #a78bfa;
+      padding: 80px 70px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.7);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .discord-embed::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at 80% 20%, rgba(168, 85, 247, 0.08), transparent 60%);
+    }
+
+    .discord-embed-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .discord-bot-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #a78bfa, #7c3aed);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: white;
+    }
+
+    .discord-bot-name {
+      font-weight: 700;
+      color: #a78bfa;
+      font-size: 1rem;
+    }
+
+    .discord-bot-badge {
+      background: #5865F2;
+      color: white;
+      font-size: 0.7rem;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 4px;
+      letter-spacing: 0.5px;
+    }
+
+    .discord-bot-time {
+      color: #72767d;
+      font-size: 0.85rem;
+      margin-left: auto;
+    }
+
+    .embed-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 8px;
+    }
+
+    .embed-content {
+      color: #b9bbbe;
+      font-size: 0.95rem;
+      line-height: 1.6;
+    }
+
+    .embed-fields {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .embed-field {
+      background: rgba(255,255,255,0.04);
+      border-radius: 8px;
+      padding: 10px 14px;
+    }
+
+    .embed-field-name {
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: #a78bfa;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 4px;
+    }
+
+    .embed-field-value {
+      font-size: 0.95rem;
+      color: #dcddde;
+    }
+
+    .embed-progress {
+      margin-top: 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .progress-bar {
+      flex: 1;
+      height: 6px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      width: 45%;
+      height: 100%;
+      background: linear-gradient(90deg, #a78bfa, #c084fc);
+      border-radius: 3px;
+      position: relative;
+    }
+
+    .progress-fill::after {
+      content: '';
+      position: absolute;
+      right: -4px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 12px;
+      height: 12px;
+      background: #fff;
+      border-radius: 50%;
+      box-shadow: 0 0 8px rgba(168, 85, 247, 0.8);
+    }
+
+    .progress-time {
+      color: #72767d;
+      font-size: 0.85rem;
+      white-space: nowrap;
+    }
+
+    .embed-thumbnail {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      width: 70px;
+      height: 70px;
+      border-radius: 8px;
+      object-fit: cover;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+    }
+
+    .embed-buttons {
+      display: flex;
+      gap: 10px;
+      margin-top: 16px;
+      flex-wrap: wrap;
+    }
+
+    .embed-btn {
+      background: rgba(168, 85, 247, 0.15);
+      border: 1px solid rgba(168, 85, 247, 0.3);
+      border-radius: 6px;
+      padding: 6px 16px;
+      color: #c084fc;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .embed-btn:hover {
+      background: rgba(168, 85, 247, 0.3);
+    }
+
+    .embed-btn.green {
+      background: rgba(74, 222, 128, 0.15);
+      border-color: rgba(74, 222, 128, 0.3);
+      color: #4ade80;
+    }
+
+    .embed-btn.red {
+      background: rgba(255, 107, 107, 0.15);
+      border-color: rgba(255, 107, 107, 0.3);
+      color: #ff6b6b;
+    }
+
+    .float-deco {
+      position: absolute;
+      pointer-events: none;
+    }
+
+    .float-note {
+      font-size: 3rem;
+      opacity: 0.25;
+      animation: floatNote 4s ease-in-out infinite alternate;
+    }
+
+    @keyframes floatNote {
+      0% { transform: translateY(0) rotate(-10deg); }
+      100% { transform: translateY(-20px) rotate(10deg); }
+    }
+
+    .features-section {
+      padding: 60px 3vw 140px;
+      max-width: 100%;
+      width: 100%;
+      margin: 0 auto;
+      position: relative;
+      z-index: 2;
+    }
+
+    .features-title {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 4.2rem;
+      margin-bottom: 16px;
+      background: linear-gradient(90deg, #a78bfa, #c084fc, #7c3aed);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-shadow: 0 0 35px rgba(168, 85, 247, 0.5);
+      text-align: center;
+    }
+
+    .features-subtitle {
+      font-size: 1.5rem;
+      color: #b0b0ff;
+      margin-bottom: 80px;
+      text-align: center;
+    }
+
+    .feat-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 100px;
+      max-width: 1950px;
+      margin: 0 auto;
+    }
+
+    .feat-card {
+      background: rgba(28, 22, 55, 0.55);
+      backdrop-filter: blur(18px);
+      border: 1px solid rgba(168, 85, 247, 0.22);
+      border-radius: 24px;
+      overflow: hidden;
+      box-shadow: 0 10px 50px rgba(0, 0, 0, 0.5);
+      transition: all 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+      opacity: 0;
+      transform: translateY(50px);
+      display: flex;
+      flex-direction: row;
+      align-items: stretch;
+    }
+
+    .feat-card:nth-child(even) {
+      flex-direction: row-reverse;
+    }
+
+    .feat-card.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .feat-card:hover {
+      border-color: rgba(168, 85, 247, 0.6);
+      box-shadow: 0 20px 70px rgba(168, 85, 247, 0.25);
+    }
+
+    .feat-img-wrap {
+      width: 850px;
+      min-width: 0px;
+      flex-shrink: 0;
+      overflow: hidden;
+      position: relative;
+      background: rgba(20,15,50,0.85);
+      aspect-ratio: 16 / 9;
+    }
+
+    .feat-card:nth-child(odd) .feat-img-wrap {
+      border-right: 1px solid rgba(168, 85, 247, 0.15);
+    }
+
+    .feat-card:nth-child(even) .feat-img-wrap {
+      border-left: 1px solid rgba(168, 85, 247, 0.15);
+    }
+
+    .feat-img-wrap img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.5s ease;
+      display: block;
+    }
+
+    .feat-card:hover .feat-img-wrap img {
+      transform: scale(1.06);
+    }
+
+    .feat-img-overlay {
+      position: absolute;
+      inset: 0;
+    }
+
+    .feat-card:nth-child(odd) .feat-img-overlay {
+      background: linear-gradient(to right, transparent 55%, rgba(28,22,55,0.65) 100%);
+    }
+
+    .feat-card:nth-child(even) .feat-img-overlay {
+      background: linear-gradient(to left, transparent 55%, rgba(28,22,55,0.65) 100%);
+    }
+
+    .feat-badge {
+      position: absolute;
+      top: 18px;
+      left: 18px;
+      background: rgba(168, 85, 247, 0.85);
+      backdrop-filter: blur(8px);
+      border-radius: 50px;
+      padding: 6px 18px;
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: #fff;
+      letter-spacing: 1px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      z-index: 2;
+    }
+
+    .feat-right {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 56px 64px;
+    }
+
+    .feat-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(168, 85, 247, 0.12);
+      border: 1px solid rgba(168, 85, 247, 0.35);
+      border-radius: 50px;
+      padding: 6px 18px;
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: #c084fc;
+      letter-spacing: 1.5px;
+      margin-bottom: 22px;
+      width: fit-content;
+    }
+
+    .feat-title {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 2.4rem;
+      font-weight: 900;
+      color: #ffffff;
+      margin-bottom: 16px;
+      line-height: 1.25;
+    }
+
+    .feat-desc {
+      font-size: 1.1rem;
+      color: #a0a0c0;
+      line-height: 1.75;
+      margin-bottom: 28px;
+      max-width: 540px;
+    }
+
+    .feat-list {
+      list-style: none;
+      padding: 0;
+      margin-bottom: 32px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .feat-list li {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 1rem;
+      color: #c8c8e8;
+    }
+
+    .feat-list li span.ico {
+      font-size: 1.15rem;
+      flex-shrink: 0;
+    }
+
+    .feat-actions {
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+
+    .feat-btn {
+      padding: 11px 28px;
+      border-radius: 50px;
+      font-weight: 700;
+      font-size: 0.95rem;
+      cursor: pointer;
+      border: none;
+      transition: all 0.3s ease;
+    }
+
+    .feat-btn-go {
+      background: linear-gradient(135deg, #4ade80, #22c55e);
+      color: #000;
+      box-shadow: 0 0 18px rgba(74,222,128,0.4);
+    }
+
+    .feat-btn-go:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 0 30px rgba(74,222,128,0.7);
+    }
+
+    .feat-btn-more {
+      background: transparent;
+      color: #a78bfa;
+      border: 1px solid rgba(168, 85, 247, 0.4);
+    }
+
+    .feat-btn-more:hover {
+      background: rgba(168, 85, 247, 0.1);
+    }
+
+    .footer-section {
+      position: relative;
+      background: rgba(10, 8, 20, 0.95);
+      border-top: 1px solid rgba(168, 85, 247, 0.2);
+      padding: 80px 60px 40px;
+      margin-top: 80px;
+      z-index: 10;
+    }
+
+    .footer-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 60px;
+    }
+
+    .footer-brand {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .footer-logo-container {
+      width: 80px;
+      height: 80px;
+      border-radius: 20px;
+      overflow: hidden;
+      border: 2px solid rgba(168, 85, 247, 0.3);
+      box-shadow: 0 0 20px rgba(168, 85, 247, 0.3);
+      background: linear-gradient(135deg, #7c3aed, #c084fc);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+    }
+
+    .footer-logo-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .footer-brand-info {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .footer-brand-name {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 2rem;
+      font-weight: 900;
+      background: linear-gradient(90deg, #a78bfa, #c084fc);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      letter-spacing: 2px;
+    }
+
+    .footer-brand-tagline {
+      font-size: 1rem;
+      color: #9090b0;
+    }
+
+    .footer-stats {
+      display: flex;
+      gap: 60px;
+      align-items: center;
+    }
+
+    .footer-stat {
+      text-align: center;
+    }
+
+    .footer-stat-number {
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: #ffffff;
+      font-family: 'Orbitron', sans-serif;
+      margin-bottom: 8px;
+    }
+
+    .footer-stat-label {
+      font-size: 0.95rem;
+      color: #9090b0;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .footer-divider {
+      width: 100%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(168, 85, 247, 0.3), transparent);
+      margin: 60px 0;
+    }
+
+    .footer-content {
+      display: flex;
+      justify-content: space-between;
+      gap: 100px;
+      margin-bottom: 60px;
+      max-width: 900px;
+    }
+
+    .footer-column { flex: 1; }
+
+    .footer-heading {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: #ffffff;
+      margin-bottom: 25px;
+      letter-spacing: 1px;
+    }
+
+    .footer-links {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .footer-links li a {
+      color: #b0b0d0;
+      text-decoration: none;
+      font-size: 1.05rem;
+      transition: all 0.3s ease;
+      display: inline-block;
+    }
+
+    .footer-links li a:hover {
+      color: #ffffff;
+      transform: translateX(5px);
+      text-shadow: 0 0 10px rgba(255,255,255,0.5);
+    }
+
+    .footer-bottom {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 40px;
+      border-top: 1px solid rgba(168, 85, 247, 0.15);
+    }
+
+    .footer-copyright { font-size: 1rem; color: #8080a0; }
+
+    .footer-socials { display: flex; gap: 20px; align-items: center; }
+
+    .footer-social-link {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: rgba(168, 85, 247, 0.1);
+      border: 1px solid rgba(168, 85, 247, 0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #b0b0d0;
+      transition: all 0.35s ease;
+      text-decoration: none;
+    }
+
+    .footer-social-link:hover {
+      background: rgba(168, 85, 247, 0.25);
+      border-color: rgba(168, 85, 247, 0.6);
+      color: #ffffff;
+      transform: translateY(-4px);
+      box-shadow: 0 8px 25px rgba(168, 85, 247, 0.4);
+    }
+
+    @media (max-width: 1100px) {
+      .profile-container { right: 20px; }
+      .profile { width: 500px; height: 500px; }
+      .header-text { max-width: 500px; }
+      .title { font-size: 4rem; }
+    }
+
+    @media (max-width: 900px) {
+      .navbar { padding: 0 20px; }
+      .nav-menu { gap: 24px; }
+      .nav-menu a { font-size: 0.95rem; }
+
+      .profile-container {
+        position: relative;
+        top: 0;
+        right: 0;
+        display: flex;
+        justify-content: center;
+        margin-top: 20px;
+      }
+
+      .profile { width: 280px; height: 280px; }
+
+      .header-text {
+        position: relative;
+        top: 80px;
+        left: 0;
+        width: 100%;
+        max-width: 100%;
+        padding: 0 20px;
+        text-align: center;
+      }
+
+      .title { font-size: 2.8rem; letter-spacing: 4px; white-space: normal; }
+      .subtitle { font-size: 1.5rem; letter-spacing: 2px; white-space: normal; }
+      .description { font-size: 1.05rem; }
+
+      .stats-bar {
+        top: 420px;
+        flex-wrap: wrap;
+        gap: 20px;
+        justify-content: center;
+        padding: 18px 20px;
+      }
+
+      .stat-divider { display: none; }
+
+      .music-info-section { padding: 500px 20px 60px; }
+      .music-row, .music-row.reverse {
+        flex-direction: column;
+        gap: 40px;
+        margin-bottom: 80px;
+      }
+
+      .section-heading { font-size: 2.2rem; }
+
+      .features-section { padding: 40px 16px 80px; }
+      .features-title { font-size: 2.6rem; }
+      .feat-grid { gap: 24px; }
+      .feat-card, .feat-card:nth-child(even) { flex-direction: column; }
+      .feat-img-wrap { width: 100% !important; min-width: 0 !important; aspect-ratio: 9 / 16 !important; max-height: 380px; border-right: none !important; border-left: none !important; border-bottom: 1px solid rgba(168,85,247,0.15); }
+      .feat-card:nth-child(odd) .feat-img-overlay, .feat-card:nth-child(even) .feat-img-overlay { background: linear-gradient(to bottom, transparent 50%, rgba(28,22,55,0.85) 100%) !important; }
+      .feat-right { padding: 28px 24px; }
+      .feat-title { font-size: 1.8rem; }
+
+      .footer-section { padding: 60px 20px 30px; }
+      .footer-top { flex-direction: column; gap: 40px; text-align: center; }
+      .footer-brand { flex-direction: column; }
+      .footer-stats { gap: 30px; flex-wrap: wrap; justify-content: center; }
+      .footer-content { flex-direction: column; gap: 40px; }
+      .footer-bottom { flex-direction: column; gap: 20px; text-align: center; }
+    }
+
+    @media (max-width: 600px) {
+      .nav-menu { display: none; }
+      .logo { font-size: 1.4rem; }
+      .title { font-size: 2.2rem; }
+      .subtitle { font-size: 1.2rem; }
+      .btn { padding: 12px 26px; font-size: 1.1rem; }
+      .buttons { flex-direction: column; align-items: center; gap: 16px; }
+      .loader-logo { font-size: 3.5rem; }
+      .loader-text { font-size: 1.1rem; letter-spacing: 2px; }
+      .music-info-section { padding: 400px 16px 40px; }
+    }
+
+    .hamburger {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      cursor: pointer;
+      padding: 8px;
+    }
+
+    .hamburger span {
+      display: block;
+      width: 26px;
+      height: 2px;
+      background: #d0d0ff;
+      border-radius: 2px;
+      transition: all 0.3s ease;
+    }
+
+    @media (max-width: 600px) {
+      .hamburger { display: flex; }
+
+      .mobile-menu {
+        display: none;
+        position: fixed;
+        top: 70px;
+        left: 0;
+        right: 0;
+        background: rgba(5, 5, 15, 0.98);
+        backdrop-filter: blur(16px);
+        border-bottom: 1px solid rgba(168, 85, 247, 0.2);
+        padding: 20px;
+        z-index: 999;
+        flex-direction: column;
+        gap: 16px;
+      }
+
+      .mobile-menu.open { display: flex; }
+
+      .mobile-menu a {
+        color: #d0d0ff;
+        text-decoration: none;
+        font-size: 1.1rem;
+        font-weight: 500;
+        padding: 10px 0;
+        border-bottom: 1px solid rgba(168, 85, 247, 0.1);
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Preloader -->
+  <div id="preloader">
+    <div class="loader-logo">Yuri Music</div>
+    <div class="loader-text">LOADING MUSIC ENGINE...</div>
+    <div class="loader-bar">
+      <div class="loader-progress"></div>
+    </div>
+  </div>
+
+  <!-- Mobile Menu -->
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="index.html">Home</a>
+    <a href="fitur.html">Fitur</a>
+    <a href="command.html">Command</a>
+    <a href="support.html">Support</a>
+    <a href="premium.html">Premium</a>
+    <a href="team.html">Team</a>
+    <a href="tos.html">TOS</a>
+    <a href="privacy.html">Privacy Policy</a>
+    <a href="dokumentasi.html">Dokumentasi</a>
+  </div>
+
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="logo">Yuri Music</div>
+
+    <div class="nav-menu">
+      <a href="index.html">Home</a>
+      <a href="fitur.html" class="protected-link">Fitur</a>
+      <a href="command.html" class="protected-link">Command</a>
+      <a href="support.html" class="protected-link">Support</a>
+      <a href="premium.html" class="protected-link">Premium</a>
+
+      <div class="nav-dropdown" id="resourcesDropdown">
+        <button class="nav-dropbtn" type="button">
+          Sumber Daya <span class="nav-caret">▾</span>
+        </button>
+
+        <div class="dropdown-panel">
+          <a class="dropdown-item protected-link" href="team.html">
+            <span class="dropdown-ico">👥</span>
+            <span class="dropdown-text">
+              <span class="dropdown-title">Team</span>
+              <span class="dropdown-sub">Kenali tim kami</span>
+            </span>
+          </a>
+          <a class="dropdown-item protected-link" href="tos.html">
+            <span class="dropdown-ico">📜</span>
+            <span class="dropdown-text">
+              <span class="dropdown-title">TOS</span>
+              <span class="dropdown-sub">Syarat & ketentuan</span>
+            </span>
+          </a>
+          <a class="dropdown-item protected-link" href="privacy.html">
+            <span class="dropdown-ico">🔒</span>
+            <span class="dropdown-text">
+              <span class="dropdown-title">Privacy Policy</span>
+              <span class="dropdown-sub">Privasi & data</span>
+            </span>
+          </a>
+          <a class="dropdown-item protected-link" href="dokumentasi.html">
+            <span class="dropdown-ico">📚</span>
+            <span class="dropdown-text">
+              <span class="dropdown-title">Dokumentasi</span>
+              <span class="dropdown-sub">Belajar & tutorial</span>
+            </span>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <div class="nav-actions" id="navActions">
+      <!-- Filled by auth.js -->
+    </div>
+
+    <div class="hamburger" id="hamburgerBtn">
+      <span></span>
+      <span></span>
+      <span></span>
+    </div>
+  </nav>
+
+  <div class="stars" id="stars"></div>
+
+  <!-- Hero -->
+  <div class="header-text">
+    <div class="title">Yuri Music</div>
+    <div class="subtitle">A Powerfull Music Bot Discord</div>
+
+    <div class="description">
+      <strong>Yuri Music</strong> adalah bot musik Discord modern yang dirancang untuk menghadirkan pengalaman mendengarkan musik terbaik langsung di server kamu. Dengan performa tinggi, kualitas audio jernih, dan kontrol interaktif yang mudah digunakan, Yuri Music membuat setiap momen di server kamu menjadi lebih hidup.
+
+      <br><br>
+
+      <strong>✨ Fitur Utama:</strong><br>
+      Putar musik dari YouTube, Spotify, dan SoundCloud<br>
+      Audio berkualitas tinggi 24/7 tanpa gangguan<br>
+      Kontrol interaktif langsung melalui tombol Discord<br>
+      Filter audio seperti Bass Boost, Nightcore, dan Vaporwave<br>
+      Sistem playlist & queue management yang canggih<br>
+      Lirik lagu real-time saat musik diputar
+
+      <br><br>
+
+      Jadikan server Discord kamu lebih seru dengan musik tanpa batas.
+      <strong>Invite Yuri Music sekarang dan mulai dengarkan!</strong>
+    </div>
+
+    <div class="buttons">
+      <a href="https://discord.gg/foryoucom" target="_blank" class="btn btn-primary">Join Discord</a>
+      <a href="https://discord.com/oauth2/authorize?client_id=1469322122269823217&scope=bot" target="_blank"
+        class="btn btn-secondary">Invite Bot</a>
+    </div>
+  </div>
+
+  <div class="profile-container">
+    <img src="pp.jpg" alt="Profile" class="profile">
+  </div>
+
+  <!-- Stats Bar -->
+  <div class="stats-bar">
+    <div class="stat-item">
+      <div class="stat-icon">🎵</div>
+      <div><span class="stat-number">0</span> Lagu Diputar</div>
+    </div>
+    <div class="stat-divider"></div>
+    <div class="stat-item">
+      <div class="stat-icon">🖥️</div>
+      <div><span class="stat-number">0</span> Server Aktif</div>
+    </div>
+    <div class="stat-divider"></div>
+    <div class="stat-item">
+      <div class="stat-icon">👥</div>
+      <div><span class="stat-number">0</span> Pendengar</div>
+    </div>
+    <div class="stat-divider"></div>
+    <div class="stat-item">
+      <div class="stat-icon">⚙️</div>
+      <div><span class="stat-number">6+</span> Sumber Musik</div>
+    </div>
+  </div>
+
+  <section class="music-info-section">
+
+    <div class="music-row">
+      <div class="music-row-text">
+        <div class="section-label">🎵 NOW PLAYING</div>
+        <h2 class="section-heading">Kontrol Musik<br>Interaktif Lengkap</h2>
+        <p class="section-desc">Kendalikan musik langsung lewat tombol Discord yang intuitif. Play, pause, skip, shuffle, repeat — semua bisa dilakukan tanpa mengetik command sama sekali. Interface bersih dan mudah digunakan untuk siapapun di server kamu.</p>
+      </div>
+      <div class="music-row-visual">
+        <div class="float-deco float-note" style="top:-30px; right:-20px; animation-delay:0.5s;">🎵</div>
+        <div class="discord-embed" style="position:relative;">
+          <img src="https://picsum.photos/70/70?random=10" alt="Album" class="embed-thumbnail">
+          <div class="discord-embed-header">
+            <img src="pp.jpg" class="discord-bot-icon" alt="Bot Avatar">
+            <div>
+              <div class="discord-bot-name">Yuri Music <span class="discord-bot-badge">APP</span></div>
+              <div style="color:#72767d;font-size:0.82rem;">Today at 12:22 AM</div>
+            </div>
+          </div>
+          <div class="embed-title">🎵 Sekarang Diputar</div>
+          <div class="embed-content">好きだから。— ［ユイカ］</div>
+          <div class="embed-fields">
+            <div class="embed-field">
+              <div class="embed-field-name">🎤 Artist</div>
+              <div class="embed-field-value">［ユイカ］</div>
+            </div>
+            <div class="embed-field">
+              <div class="embed-field-name">⏱️ Durasi</div>
+              <div class="embed-field-value">04:58</div>
+            </div>
+            <div class="embed-field">
+              <div class="embed-field-name">📀 Album</div>
+              <div class="embed-field-value">好きだから。</div>
+            </div>
+            <div class="embed-field">
+              <div class="embed-field-name">👤 Requester</div>
+              <div class="embed-field-value">@User</div>
+            </div>
+          </div>
+          <div class="embed-progress">
+            <span class="progress-time">02:14</span>
+            <div class="progress-bar"><div class="progress-fill"></div></div>
+            <span class="progress-time">04:58</span>
+          </div>
+          <div class="embed-buttons">
+            <button class="embed-btn">⏮</button>
+            <button class="embed-btn red">⏸ Pause</button>
+            <button class="embed-btn">⏭ Skip</button>
+            <button class="embed-btn green">Shuffle</button>
+            <button class="embed-btn">Loop</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="music-row reverse">
+      <div class="music-row-text">
+        <div class="section-label">QUEUE SYSTEM</div>
+        <h2 class="section-heading">Antrian Musik<br>Tanpa Batas</h2>
+        <p class="section-desc">Tambahkan lagu ke antrian sebanyak yang kamu mau. Lihat, kelola, dan atur ulang urutan lagu kapan saja. Support playlist Spotify, YouTube Playlist, dan SoundCloud Sets — langsung dalam satu command.</p>
+      </div>
+      <div class="music-row-visual">
+        <div class="float-deco float-note" style="bottom:-20px; left:-20px; animation-delay:1s;">🎶</div>
+        <div class="discord-embed">
+          <div class="discord-embed-header">
+            <img src="pp.jpg" class="discord-bot-icon" alt="Bot Avatar">
+            <div>
+              <div class="discord-bot-name">Yuri Music <span class="discord-bot-badge">APP</span></div>
+              <div style="color:#72767d;font-size:0.82rem;">Today at 12:25 AM</div>
+            </div>
+          </div>
+          <div class="embed-title">Music Queue — 8 Lagu</div>
+          <div style="margin-top:14px; display:flex; flex-direction:column; gap:8px;">
+            <div style="background:rgba(168,85,247,0.12); border:1px solid rgba(168,85,247,0.25); border-radius:8px; padding:10px 14px; display:flex; align-items:center; gap:12px;">
+              <span style="color:#a78bfa; font-weight:700; font-size:0.85rem;">NOW</span>
+              <div style="flex:1;">
+                <div style="color:#fff; font-size:0.95rem; font-weight:600;">好きだから。</div>
+                <div style="color:#72767d; font-size:0.82rem;">04:58 • @User</div>
+              </div>
+            </div>
+            <div style="background:rgba(255,255,255,0.03); border-radius:8px; padding:10px 14px; display:flex; align-items:center; gap:12px;">
+              <span style="color:#6b7280; font-size:0.85rem; width:20px; text-align:center;">2</span>
+              <div style="flex:1;">
+                <div style="color:#dcddde; font-size:0.92rem;">Subtitle — Official HIGE DANdism</div>
+                <div style="color:#72767d; font-size:0.82rem;">05:04 • @User</div>
+              </div>
+            </div>
+            <div style="background:rgba(255,255,255,0.03); border-radius:8px; padding:10px 14px; display:flex; align-items:center; gap:12px;">
+              <span style="color:#6b7280; font-size:0.85rem; width:20px; text-align:center;">3</span>
+              <div style="flex:1;">
+                <div style="color:#dcddde; font-size:0.92rem;">Blinding Lights — The Weeknd</div>
+                <div style="color:#72767d; font-size:0.82rem;">03:20 • @Guest</div>
+              </div>
+            </div>
+            <div style="color:#72767d; font-size:0.85rem; text-align:center; padding:6px 0;">+5 lagu lagi dalam antrian...</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="music-row">
+      <div class="music-row-text">
+        <div class="section-label">AUDIO FILTER</div>
+        <h2 class="section-heading">Filter Audio<br>Berkualitas Studio</h2>
+        <p class="section-desc">Tingkatkan pengalaman mendengarkan dengan efek audio canggih. Bass boost untuk lagu EDM, nightcore untuk anime vibes, vaporwave untuk nuansa retro, 8D untuk sensasi menakjubkan — semuanya tersedia dengan satu command.</p>
+      </div>
+      <div class="music-row-visual">
+        <div class="discord-embed">
+          <div class="discord-embed-header">
+            <img src="pp.jpg" class="discord-bot-icon" alt="Bot Avatar">
+            <div>
+              <div class="discord-bot-name">Yuri Music <span class="discord-bot-badge">APP</span></div>
+              <div style="color:#72767d;font-size:0.82rem;">Today at 12:30 AM</div>
+            </div>
+          </div>
+          <div class="embed-title">Audio Filter Panel</div>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:14px;">
+            <div style="background:rgba(168,85,247,0.15); border:1px solid rgba(168,85,247,0.3); border-radius:10px; padding:12px; text-align:center;">
+              <div style="font-size:1.5rem; margin-bottom:4px;">🔊</div>
+              <div style="font-weight:700; color:#a78bfa; font-size:0.95rem;">Bass Boost</div>
+              <div style="font-size:0.8rem; color:#72767d;">Level: +5dB</div>
+            </div>
+            <div style="background:rgba(255,255,255,0.04); border-radius:10px; padding:12px; text-align:center;">
+              <div style="font-size:1.5rem; margin-bottom:4px;">🌙</div>
+              <div style="font-weight:700; color:#dcddde; font-size:0.95rem;">Nightcore</div>
+              <div style="font-size:0.8rem; color:#72767d;">Speed: +25%</div>
+            </div>
+            <div style="background:rgba(255,255,255,0.04); border-radius:10px; padding:12px; text-align:center;">
+              <div style="font-size:1.5rem; margin-bottom:4px;">🌊</div>
+              <div style="font-weight:700; color:#dcddde; font-size:0.95rem;">Vaporwave</div>
+              <div style="font-size:0.8rem; color:#72767d;">Slowed + Reverb</div>
+            </div>
+            <div style="background:rgba(255,255,255,0.04); border-radius:10px; padding:12px; text-align:center;">
+              <div style="font-size:1.5rem; margin-bottom:4px;">🎧</div>
+              <div style="font-weight:700; color:#dcddde; font-size:0.95rem;">8D Audio</div>
+              <div style="font-size:0.8rem; color:#72767d;">Spatial Sound</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="music-row reverse">
+      <div class="music-row-text">
+        <div class="section-label">LYRICS</div>
+        <h2 class="section-heading">Lirik Real-Time<br>Saat Lagu Diputar</h2>
+        <p class="section-desc">Tampilkan lirik lagu secara real-time langsung di channel Discord kamu. Sinkronisasi otomatis dengan lagu yang sedang diputar, mendukung ribuan lagu dari berbagai bahasa termasuk Jepang, Korea, dan Inggris.</p>
+      </div>
+      <div class="music-row-visual">
+        <div class="discord-embed">
+          <div class="discord-embed-header">
+            <img src="pp.jpg" class="discord-bot-icon" alt="Bot Avatar">
+            <div>
+              <div class="discord-bot-name">Yuri Music <span class="discord-bot-badge">APP</span></div>
+              <div style="color:#72767d;font-size:0.82rem;">Today at 12:33 AM</div>
+            </div>
+          </div>
+          <div class="embed-title">Lirik — 好きだから。</div>
+          <div style="margin-top:14px; font-family:'Roboto',sans-serif; line-height:2;">
+            <div style="color:#6b7280; font-size:0.88rem;">...</div>
+            <div style="color:#6b7280; font-size:0.92rem;">あの日の空の色が</div>
+            <div style="color:#6b7280; font-size:0.92rem;">今でも目に焼き付いて</div>
+            <div style="background:rgba(168,85,247,0.18); border-left:3px solid #a78bfa; padding:6px 12px; border-radius:4px; color:#fff; font-weight:700; font-size:1rem; margin:6px 0;">好きだから。— ［現在再生中］</div>
+            <div style="color:#6b7280; font-size:0.92rem;">ずっと側にいたいけど</div>
+            <div style="color:#6b7280; font-size:0.92rem;">言葉にならないよ</div>
+            <div style="color:#6b7280; font-size:0.88rem;">...</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </section>
+
+  <section class="features-section">
+    <h2 class="features-title">FITUR UTAMA</h2>
+    <p class="features-subtitle">SEMUA YANG KAMU BUTUHKAN UNTUK PENGALAMAN MUSIK TERBAIK</p>
+
+    <div class="feat-grid">
+
+      <div class="feat-card">
+        <div class="feat-img-wrap">
+          <img src="yuri1.png" alt="Music Setup">
+          <div class="feat-img-overlay"></div>
+          <div class="feat-badge">Setup</div>
+        </div>
+        <div class="feat-right">
+          <div class="feat-tag">EASY SETUP</div>
+          <h3 class="feat-title">Easy Setup!</h3>
+          <p class="feat-desc">Mulai dalam hitungan detik dengan pembuatan otomatis channel musik, role, dan permission. Yuri Music mengkonfigurasi semuanya untukmu — tidak perlu pengetahuan teknis apapun.</p>
+          <ul class="feat-list">
+            <li><span class="ico"></span> Auto-buat Music Category & Voice Channel</li>
+            <li><span class="ico"></span> Pilih kualitas audio (Low / High / Lossless)</li>
+            <li><span class="ico"></span> Optional DJ Role untuk batasi akses command</li>
+            <li><span class="ico"></span> Dedicated text channel khusus command musik</li>
+          </ul>
+          <div class="feat-actions">
+            <button class="feat-btn feat-btn-go" onclick="window.open('https://discord.com/oauth2/authorize?client_id=1469322122269823217&scope=bot','_blank')">Invite me!</button>
+            <button class="feat-btn feat-btn-more">Pelajari</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="feat-card">
+        <div class="feat-img-wrap">
+          <img src="yuri2.png" alt="Interactive Controls">
+          <div class="feat-img-overlay"></div>
+          <div class="feat-badge">Music</div>
+        </div>
+        <div class="feat-right">
+          <div class="feat-tag">MUSIC</div>
+          <h3 class="feat-title">Completed Interactive Controls</h3>
+          <p class="feat-desc">Kendalikan musik langsung lewat tombol Discord yang interaktif. Play, pause, skip, shuffle, repeat — semua bisa dilakukan tanpa mengetik command. Interface bersih dan mudah digunakan oleh siapapun di server kamu.</p>
+          <ul class="feat-list">
+            <li><span class="ico"></span> Tombol Play / Pause / Skip interaktif</li>
+            <li><span class="ico"></span> Shuffle, Loop, dan Repeat mode</li>
+            <li><span class="ico"></span> Kontrol volume langsung dari Discord</li>
+            <li><span class="ico"></span> Fast forward & rewind dengan presisi</li>
+          </ul>
+          <div class="feat-actions">
+            <button class="feat-btn feat-btn-go" onclick="window.open('https://discord.com/oauth2/authorize?client_id=1469322122269823217&scope=bot','_blank')">Invite me!</button>
+            <button class="feat-btn feat-btn-more">Pelajari</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="feat-card">
+        <div class="feat-img-wrap">
+          <img src="yuri3.png" alt="Multi Source">
+          <div class="feat-img-overlay"></div>
+          <div class="feat-badge">Sources</div>
+        </div>
+        <div class="feat-right">
+          <div class="feat-tag">MULTI-PLATFORM</div>
+          <h3 class="feat-title">Multi-Platform Music Support</h3>
+          <p class="feat-desc">Putar lagu dari semua platform musik favorit kamu dalam satu bot. YouTube, Spotify, SoundCloud, Apple Music — semua terhubung dan siap diputar kapan saja, 24 jam tanpa henti.</p>
+          <ul class="feat-list">
+            <li><span class="ico"></span> YouTube & YouTube Music</li>
+            <li><span class="ico"></span> Spotify — lagu, album, playlist lengkap</li>
+            <li><span class="ico"></span> SoundCloud & SoundCloud Go+</li>
+            <li><span class="ico"></span> Apple Music & Deezer</li>
+          </ul>
+          <div class="feat-actions">
+            <button class="feat-btn feat-btn-go" onclick="window.open('https://discord.com/oauth2/authorize?client_id=1469322122269823217&scope=bot','_blank')">Invite me!</button>
+            <button class="feat-btn feat-btn-more">Pelajari</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="feat-card">
+        <div class="feat-img-wrap">
+          <img src="yuri4.png" alt="Audio Filters">
+          <div class="feat-img-overlay"></div>
+          <div class="feat-badge">Filters</div>
+        </div>
+        <div class="feat-right">
+          <div class="feat-tag">AUDIO EFFECTS</div>
+          <h3 class="feat-title">Studio-Grade Audio Effects</h3>
+          <p class="feat-desc">Tingkatkan pengalaman mendengarkan musik dengan efek audio berkualitas studio. Dari bass boost EDM hingga nightcore anime dan vaporwave retro — semuanya dalam satu command.</p>
+          <ul class="feat-list">
+            <li><span class="ico"></span> Bass Boost & Treble Enhancement</li>
+            <li><span class="ico"></span> Nightcore / Daycore mode</li>
+            <li><span class="ico"></span> Vaporwave & Slowed + Reverb</li>
+            <li><span class="ico"></span> 8D Audio & Karaoke Mode</li>
+          </ul>
+          <div class="feat-actions">
+            <button class="feat-btn feat-btn-go" onclick="window.open('https://discord.com/oauth2/authorize?client_id=1469322122269823217&scope=bot','_blank')">Invite me!</button>
+            <button class="feat-btn feat-btn-more">Pelajari</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="feat-card">
+        <div class="feat-img-wrap">
+          <img src="yuri5.png" alt="Lyrics">
+          <div class="feat-img-overlay"></div>
+          <div class="feat-badge">Lyrics</div>
+        </div>
+        <div class="feat-right">
+          <div class="feat-tag">REAL-TIME LYRICS</div>
+          <h3 class="feat-title">Real-Time Synchronized Lyrics</h3>
+          <p class="feat-desc">Tampilkan lirik lagu secara real-time yang tersinkronisasi sempurna dengan musik yang sedang diputar. Mendukung ribuan lagu dari berbagai bahasa — Jepang, Korea, Inggris, dan banyak lagi.</p>
+          <ul class="feat-list">
+            <li><span class="ico"></span> Lirik real-time otomatis tersinkronisasi</li>
+            <li><span class="ico"></span> Support bahasa Jepang, Korea, Inggris, dll</li>
+            <li><span class="ico"></span> Pencarian lirik manual kapan saja</li>
+            <li><span class="ico"></span> Mode karaoke interaktif yang seru</li>
+          </ul>
+          <div class="feat-actions">
+            <button class="feat-btn feat-btn-go" onclick="window.open('https://discord.com/oauth2/authorize?client_id=1469322122269823217&scope=bot','_blank')">Invite me!</button>
+            <button class="feat-btn feat-btn-more">Pelajari</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <footer class="footer-section">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <div class="footer-logo-container">
+          <img src="pp.jpg" alt="Yuri Music Logo" class="footer-logo-img" onerror="this.style.display='none';this.parentElement.innerHTML='🎵';">
+        </div>
+        <div class="footer-brand-info">
+          <h3 class="footer-brand-name">Yuri Music</h3>
+          <p class="footer-brand-tagline">The Best Music Experience on Discord</p>
+        </div>
+      </div>
+
+      <div class="footer-stats">
+        <div class="footer-stat">
+          <div class="footer-stat-number">--</div>
+          <div class="footer-stat-label">Active Users</div>
+        </div>
+        <div class="footer-stat">
+          <div class="footer-stat-number">--</div>
+          <div class="footer-stat-label">Songs Played</div>
+        </div>
+        <div class="footer-stat">
+          <div class="footer-stat-number">--</div>
+          <div class="footer-stat-label">Servers</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer-divider"></div>
+
+    <div class="footer-content">
+      <div class="footer-column">
+        <h4 class="footer-heading">Yuri Music</h4>
+        <ul class="footer-links">
+          <li><a href="command.html">Commands</a></li>
+          <li><a href="dokumentasi.html">Dokumentasi</a></li>
+          <li><a href="#">Changelog</a></li>
+          <li><a href="team.html">Team</a></li>
+        </ul>
+      </div>
+      <div class="footer-column">
+        <h4 class="footer-heading">Community</h4>
+        <ul class="footer-links">
+          <li><a href="https://discord.gg/foryoucom" target="_blank">Support Server</a></li>
+        </ul>
+      </div>
+      <div class="footer-column">
+        <h4 class="footer-heading">Legal</h4>
+        <ul class="footer-links">
+          <li><a href="tos.html">Terms of Service</a></li>
+          <li><a href="privacy.html">Privacy Policy</a></li>
+          <li><a href="#">Usage Guidelines</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <div class="footer-copyright">© 2025 Yuri Music. All rights reserved</div>
+      <div class="footer-socials">
+        <a href="mailto:contact@yurimusic.com" class="footer-social-link" aria-label="Email">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="4"/>
+            <path d="M16 8v5a3 3 0 0 0 6 0v-1a10 10 0 1 0-3.92 7.94"/>
+          </svg>
+        </a>
+        <a href="https://discord.gg/foryoucom" class="footer-social-link" aria-label="Discord" target="_blank">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515a.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0a12.64 12.64 0 0 0-.617-1.25a.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057a19.9 19.9 0 0 0 5.993 3.03a.078.078 0 0 0 .084-.028a14.09 14.09 0 0 0 1.226-1.994a.076.076 0 0 0-.041-.106a13.107 13.107 0 0 1-1.872-.892a.077.077 0 0 1-.008-.128a10.2 10.2 0 0 0 .372-.292a.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127a12.299 12.299 0 0 1-1.873.892a.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028a19.839 19.839 0 0 0 6.002-3.03a.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03z"/>
+          </svg>
+        </a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="auth.js"></script>
+
+  <script>
+    window.addEventListener('load', () => {
+      document.body.classList.add('loaded');
+      const preloader = document.getElementById('preloader');
+      setTimeout(() => {
+        preloader.classList.add('hidden');
+        document.querySelector('.navbar').classList.add('loaded');
+      }, 2000);
+    });
+
+    function createStars() {
+      const container = document.getElementById('stars');
+      for (let i = 0; i < 200; i++) {
+        const star = document.createElement('div');
+        star.className = 'star';
+        const size = Math.random() * 3.5 + 1;
+        star.style.width = size + 'px';
+        star.style.height = size + 'px';
+        star.style.left = Math.random() * 100 + 'vw';
+        star.style.top = Math.random() * 100 + 'vh';
+        star.style.animationDelay = Math.random() * 7 + 's';
+        container.appendChild(star);
+      }
+    }
+
+    function createMeteor() {
+      const meteor = document.createElement('div');
+      meteor.className = 'meteor';
+      const startX = 80 + Math.random() * 20;
+      const startY = -30 - Math.random() * 40;
+      meteor.style.left = startX + 'vw';
+      meteor.style.top = startY + 'vh';
+      const duration = 3.8 + Math.random() * 4.2;
+      meteor.style.animationDuration = duration + 's';
+      const rot = 42 + Math.random() * 18;
+      meteor.style.transform = `translate(-50%, -50%) rotate(${rot}deg)`;
+      document.body.appendChild(meteor);
+      setTimeout(() => meteor.remove(), duration * 1000 + 2500);
+    }
+
+    createStars();
+    setInterval(createMeteor, 600 + Math.random() * 1400);
+    for (let i = 0; i < 10; i++) setTimeout(createMeteor, i * 300 + Math.random() * 600);
+
+    const animEls = document.querySelectorAll('.feat-card, .music-row');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) entry.target.classList.add('visible');
+      });
+    }, { threshold: 0.12 });
+    animEls.forEach(el => observer.observe(el));
+
+    document.querySelectorAll('.feat-card').forEach((card, i) => {
+      card.style.transitionDelay = (i * 0.1) + 's';
+    });
+
+    (() => {
+      const wrap = document.getElementById("resourcesDropdown");
+      if (!wrap) return;
+      const btn = wrap.querySelector(".nav-dropbtn");
+      const open = () => wrap.classList.add("open");
+      const close = () => wrap.classList.remove("open");
+      const toggle = () => wrap.classList.toggle("open");
+      wrap.addEventListener("mouseenter", open);
+      wrap.addEventListener("mouseleave", close);
+      btn.addEventListener("click", (e) => { e.stopPropagation(); toggle(); });
+      document.addEventListener("click", close);
+      document.addEventListener("keydown", (e) => { if (e.key === "Escape") close(); });
+    })();
+
+    const hamburgerBtn = document.getElementById('hamburgerBtn');
+    const mobileMenu = document.getElementById('mobileMenu');
+    if (hamburgerBtn) {
+      hamburgerBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        mobileMenu.classList.toggle('open');
+      });
+      document.addEventListener('click', () => mobileMenu.classList.remove('open'));
+    }
+  </script>
+</body>
+</html>
