@@ -4,6 +4,7 @@
   "public": true,
   "cleanUrls": true,
   "trailingSlash": false,
+
   "headers": [
     {
       "source": "/(.*)",
@@ -15,25 +16,46 @@
       ]
     },
     {
-      "source": "/(.*\\.(js|css|png|jpg|jpeg|gif|ico|svg))",
+      "source": "/(.*)\\.(js|css|png|jpg|jpeg|gif|ico|svg)",
       "headers": [
-        { "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        }
       ]
     },
     {
-      "source": "/(.*\\.html)",
+      "source": "/(.*)\\.html",
       "headers": [
-        { "key": "Cache-Control", "value": "public, max-age=0, must-revalidate" }
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=0, must-revalidate"
+        }
       ]
     }
   ],
+
   "rewrites": [
-    { "source": "/auth/discord", "destination": "/api/auth/discord" },
-    { "source": "/auth/callback", "destination": "/Auth_callback.html" },
-    { "source": "/(.*)", "destination": "/$1" }
+    {
+      "source": "/auth/discord",
+      "destination": "/api/auth/discord"
+    },
+    {
+      "source": "/auth/callback",
+      "destination": "/Auth_callback.html"
+    }
   ],
+
   "redirects": [
-    { "source": "/home", "destination": "/index.html", "permanent": true },
-    { "source": "/login", "destination": "/login.html", "permanent": true }
+    {
+      "source": "/home",
+      "destination": "/index.html",
+      "permanent": true
+    },
+    {
+      "source": "/login",
+      "destination": "/login.html",
+      "permanent": true
+    }
   ]
 }
